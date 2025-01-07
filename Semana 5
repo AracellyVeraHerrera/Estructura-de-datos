@@ -1,0 +1,35 @@
+# Ejercicio 1
+asignaturas = ["Matemáticas", "Física", "Química", "Historia", "Lengua"]
+print(asignaturas)
+
+# Ejercicio 2
+asignaturas = ["Matemáticas", "Física", "Química", "Historia", "Lengua"]
+for asignatura in asignaturas:
+    print(f"Yo estudio {asignatura}")
+
+# Ejercicio 3
+asignaturas = ["Matemáticas", "Física", "Química", "Historia", "Lengua"]
+notas = []
+
+for asignatura in asignaturas:
+    nota = input(f"¿Qué nota has sacado en {asignatura}? ")
+    notas.append(nota)
+
+for asignatura, nota in zip(asignaturas, notas):
+    print(f"En {asignatura} has sacado {nota}")
+
+# Ejercicio 4
+numeros_ganadores = []
+print("Introduce los números ganadores de la lotería primitiva:")
+
+for _ in range(6):  # Suponiendo que son 6 números ganadores
+    numero = int(input("Número: "))
+    numeros_ganadores.append(numero)
+
+numeros_ganadores.sort()
+print("Números ganadores ordenados:", numeros_ganadores)
+
+# Ejercicio 5
+numeros = list(range(1, 11))
+numeros_inverso = numeros[::-1]
+print(",".join(map(str, numeros_inverso)))
