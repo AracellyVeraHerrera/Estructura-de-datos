@@ -1,0 +1,34 @@
+class Lista:
+    def __init__(self):
+        self.elementos = []
+    
+    def agregar(self, elemento):
+        """Agrega un elemento a la lista."""
+        self.elementos.append(elemento)
+    
+    def buscar(self, valor):
+        """
+        Busca el valor en la lista y retorna el número de veces que se encuentra.
+        Si no se encuentra, muestra un mensaje indicando que no fue encontrado.
+        """
+        contador = self.elementos.count(valor)
+        if contador > 0:
+            return f"El valor '{valor}' se encuentra {contador} veces en la lista."
+        else:
+            return f"El valor '{valor}' no fue encontrado en la lista."
+    
+    def mostrar(self):
+        """Muestra los elementos de la lista."""
+        return self.elementos
+
+
+# Ejemplo de uso
+mi_lista = Lista()
+mi_lista.agregar(5)
+mi_lista.agregar(10)
+mi_lista.agregar(5)
+mi_lista.agregar(15)
+
+print(mi_lista.buscar(5))  # Salida: El valor '5' se encuentra 2 veces en la lista.
+print(mi_lista.buscar(20))  # Salida: El valor '20' no fue encontrado en la lista.
+print(mi_lista.mostrar())  # Salida: [5, 10, 5, 15]

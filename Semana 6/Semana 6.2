@@ -1,0 +1,60 @@
+import random
+
+class Nodo:
+    def __init__(self, dato):
+        self.dato = dato
+        self.siguiente = None
+
+class ListaEnlazada:
+    def __init__(self):
+        self.cabeza = None
+    
+    def agregar(self, dato):
+        """Agrega un nodo al final de la lista enlazada."""
+        nuevo_nodo = Nodo(dato)
+        if not self.cabeza:
+            self.cabeza = nuevo_nodo
+        else:
+            actual = self.cabeza
+            while actual.siguiente:
+                actual = actual.siguiente
+            actual.siguiente = nuevo_nodo
+    
+    def mostrar(self):
+        """Muestra todos los elementos de la lista enlazada."""
+        elementos = []
+        actual = self.cabeza
+        while actual:
+            elementos.append(actual.dato)
+            actual = actual.siguiente
+        return elementos
+    
+    def eliminar_fuera_de_rango(self, minimo, maximo):
+        """Elimina los nodos cuyo valor esté fuera del rango [minimo, maximo]."""
+        while self.cabeza and (self.cabeza.dato < minimo or self.cabeza.dato > maximo):
+            self.cabeza = self.cabeza.siguiente
+        
+        actual = self.cabeza
+        while actual and actual.siguiente:
+            if actual.siguiente.dato < minimo or actual.siguiente.dato > maximo:
+                actual.siguiente = actual.siguiente.siguiente
+            else:
+                actual = actual.siguiente
+
+
+# Crear lista enlazada y generar 50 números aleatorios
+lista = ListaEnlazada()
+for _ in range(50):
+    lista.agregar(random.randint(1, 999))
+
+print("Lista original:")
+print(lista.mostrar())
+
+# Leer el rango desde el teclado
+minimo = int(input("Ingrese el valor mínimo del rango: "))
+maximo = int(input("Ingrese el valor máximo del rango: "))
+
+# Eliminar nodos fuera del rango y mostrar la lista resultante
+lista.eliminar_fuera_de_rango(minimo, maximo)
+print("\nLista después de eliminar los nodos fuera del rango:")
+print(lista.mostrar())
