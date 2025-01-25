@@ -1,0 +1,105 @@
+// Verificación de fórmula balanceada usando pilas
+using System;
+using System.Collections.Generic;
+
+class Program
+{
+    static bool IsFormulaBalanced(string formula)
+    {
+        Stack<char> stack = new Stack<char>();
+
+        foreach (char c in formula)
+        {
+            if (c == '{' || c == '[' || c == '(')
+            {
+                stack.Push(c);
+            }
+            else if (c == '}' || c == ']' || c == ')')
+            {
+                if (stack.Count == 0)
+                    return false;
+
+                char top = stack.Pop();
+                if ((c == '}' && top != '{') ||
+                    (c == ']' && top != '[') ||
+                    (c == ')' && top != '('))
+                {
+                    return false;
+                }
+            }
+        }
+
+        return stack.Count == 0;
+    }
+
+    static void TestFormula()
+    {
+        Console.WriteLine("Ingrese la fórmula matemática:");
+        string formula = Console.ReadLine();
+
+        if (IsFormulaBalanced(formula))
+        {
+            Console.WriteLine("La fórmula está balanceada.");
+        }
+        else
+        {
+            Console.WriteLine("La fórmula no está balanceada.");
+        }
+    }
+
+    // Algoritmo para las Torres de Hanoi
+    static void SolveTowersOfHanoi(int n, Stack<int> source, Stack<int> target, Stack<int> auxiliary, string sourceName, string targetName, string auxiliaryName)
+    {
+        if (n == 1)
+        {
+            int disk = source.Pop();
+            target.Push(disk);
+            Console.WriteLine($"Mover disco {disk} de {sourceName} a {targetName}");
+            return;
+        }
+
+        SolveTowersOfHanoi(n - 1, source, auxiliary, target, sourceName, auxiliaryName, targetName);
+        SolveTowersOfHanoi(1, source, target, auxiliary, sourceName, targetName, auxiliaryName);
+        SolveTowersOfHanoi(n - 1, auxiliary, target, source, auxiliaryName, targetName, sourceName);
+    }
+
+    static void TestTowersOfHanoi()
+    {
+        Console.WriteLine("Ingrese el número de discos para las Torres de Hanoi:");
+        int n = int.Parse(Console.ReadLine());
+
+        Stack<int> source = new Stack<int>();
+        Stack<int> target = new Stack<int>();
+        Stack<int> auxiliary = new Stack<int>();
+
+        for (int i = n; i >= 1; i--)
+        {
+            source.Push(i);
+        }
+
+        Console.WriteLine("Movimientos para resolver las Torres de Hanoi:");
+        SolveTowersOfHanoi(n, source, target, auxiliary, "Origen", "Destino", "Auxiliar");
+    }
+
+    static void Main(string[] args)
+    {
+        Console.WriteLine("Seleccione una opción:");
+        Console.WriteLine("1. Verificar fórmula balanceada");
+        Console.WriteLine("2. Resolver Torres de Hanoi");
+
+        int choice = int.Parse(Console.ReadLine());
+
+        if (choice == 1)
+        {
+            TestFormula();
+        }
+        else if (choice == 2)
+        {
+            TestTowersOfHanoi();
+        }
+        else
+        {
+            Console.WriteLine("Opción no válida.");
+        }
+    }
+}
