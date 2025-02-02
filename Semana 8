@@ -21,7 +21,6 @@ class Auditorio
 {
     private Queue<string> colaDeEspera = new Queue<string>();
     private List<Asiento> asientos = new List<Asiento>();
-    private int index = 0;
     private object lockObj = new object();
 
     public Auditorio(int capacidad)
@@ -37,24 +36,39 @@ class Auditorio
         lock (lockObj)
         {
             colaDeEspera.Enqueue(nombre);
+            Console.WriteLine($"{nombre} se ha agregado a la cola de espera.");
         }
     }
 
     public void AsignarAsiento()
     {
-        while (colaDeEspera.Count > 0 && index < asientos.Count)
+        while (true)
         {
+            string persona;
             lock (lockObj)
             {
-                if (colaDeEspera.Count > 0 && !asientos[index].Ocupado)
+                if (colaDeEspera.Count == 0)
                 {
-                    string persona = colaDeEspera.Dequeue();
-                    asientos[index].Ocupado = true;
-                    asientos[index].NombreOcupante = persona;
-                    Console.WriteLine($"{persona} ha sido asignado al asiento #{asientos[index].Numero}");
-                    index++;
+                    break; // Salir si no hay más personas en la cola
+                }
+                persona = colaDeEspera.Dequeue();
+            }
+
+            // Buscar un asiento libre
+            for (int i = 0; i < asientos.Count; i++)
+            {
+                lock (lockObj)
+                {
+                    if (!asientos[i].Ocupado)
+                    {
+                        asientos[i].Ocupado = true;
+                        asientos[i].NombreOcupante = persona;
+                        Console.WriteLine($"{persona} ha sido asignado al asiento #{asientos[i].Numero}");
+                        break; // Salir del bucle una vez que se asigna el asiento
+                    }
                 }
             }
+
             Thread.Sleep(100); // Simula un pequeño retraso en la asignación
         }
     }
