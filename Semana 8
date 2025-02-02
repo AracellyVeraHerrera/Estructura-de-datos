@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading;
 
 class Asiento
@@ -66,12 +67,23 @@ class Auditorio
             Console.WriteLine($"Asiento {asiento.Numero}: {estado}");
         }
     }
+
+    public void GenerarReporte()
+    {
+        Console.WriteLine("\n--- Reporte de Asientos ---");
+        MostrarAsientos();
+        Console.WriteLine("\nTotal de asientos ocupados: " + asientos.FindAll(a => a.Ocupado).Count);
+        Console.WriteLine("Total de asientos libres: " + asientos.FindAll(a => !a.Ocupado).Count);
+    }
 }
 
 class Program
 {
     static void Main()
     {
+        Stopwatch stopwatch = new Stopwatch();
+        stopwatch.Start();
+
         Auditorio auditorio = new Auditorio(100);
         Thread registro1 = new Thread(() =>
         {
@@ -101,7 +113,17 @@ class Program
         registro2.Join();
         asignador.Join();
 
+        stopwatch.Stop();
         Console.WriteLine("\nEstado final de los asientos:");
         auditorio.MostrarAsientos();
+        auditorio.GenerarReporte();
+        Console.WriteLine($"\nTiempo de ejecución: {stopwatch.ElapsedMilliseconds} ms");
+        
+        Console.WriteLine("\n--- Análisis de Estructura de Datos ---");
+        Console.WriteLine("Se utilizó una Queue para manejar la cola de espera en orden FIFO, lo que permite un acceso eficiente a los asistentes en orden de llegada. También se usó una lista para almacenar los asientos, permitiendo acceso rápido a su estado.");
+        Console.WriteLine("Ventajas: Eficiencia en la asignación y consulta. Desventajas: No permite acceso aleatorio a la cola de espera.");
+        
+        Console.WriteLine("\nAgente de IA utilizado: ChatGPT");
+        Console.WriteLine("Porcentaje de código generado con IA: Aproximadamente 50%");
     }
 }
