@@ -1,0 +1,107 @@
+using System;
+using System.Collections.Generic;
+using System.Threading;
+
+class Asiento
+{
+    public int Numero { get; set; }
+    public bool Ocupado { get; set; }
+    public string? NombreOcupante { get; set; }
+
+    public Asiento(int numero)
+    {
+        Numero = numero;
+        Ocupado = false;
+        NombreOcupante = null;
+    }
+}
+
+class Auditorio
+{
+    private Queue<string> colaDeEspera = new Queue<string>();
+    private List<Asiento> asientos = new List<Asiento>();
+    private int index = 0;
+    private object lockObj = new object();
+
+    public Auditorio(int capacidad)
+    {
+        for (int i = 1; i <= capacidad; i++)
+        {
+            asientos.Add(new Asiento(i));
+        }
+    }
+
+    public void AgregarPersona(string nombre)
+    {
+        lock (lockObj)
+        {
+            colaDeEspera.Enqueue(nombre);
+        }
+    }
+
+    public void AsignarAsiento()
+    {
+        while (colaDeEspera.Count > 0 && index < asientos.Count)
+        {
+            lock (lockObj)
+            {
+                if (colaDeEspera.Count > 0 && !asientos[index].Ocupado)
+                {
+                    string persona = colaDeEspera.Dequeue();
+                    asientos[index].Ocupado = true;
+                    asientos[index].NombreOcupante = persona;
+                    Console.WriteLine($"{persona} ha sido asignado al asiento #{asientos[index].Numero}");
+                    index++;
+                }
+            }
+            Thread.Sleep(100); // Simula un pequeño retraso en la asignación
+        }
+    }
+
+    public void MostrarAsientos()
+    {
+        foreach (var asiento in asientos)
+        {
+            string estado = asiento.Ocupado ? $"Ocupado por {asiento.NombreOcupante}" : "Libre";
+            Console.WriteLine($"Asiento {asiento.Numero}: {estado}");
+        }
+    }
+}
+
+class Program
+{
+    static void Main()
+    {
+        Auditorio auditorio = new Auditorio(100);
+        Thread registro1 = new Thread(() =>
+        {
+            for (int i = 1; i <= 50; i++)
+            {
+                auditorio.AgregarPersona($"Persona_{i}");
+                Thread.Sleep(50);
+            }
+        });
+
+        Thread registro2 = new Thread(() =>
+        {
+            for (int i = 51; i <= 100; i++)
+            {
+                auditorio.AgregarPersona($"Persona_{i}");
+                Thread.Sleep(50);
+            }
+        });
+
+        registro1.Start();
+        registro2.Start();
+
+        Thread asignador = new Thread(auditorio.AsignarAsiento);
+        asignador.Start();
+
+        registro1.Join();
+        registro2.Join();
+        asignador.Join();
+
+        Console.WriteLine("\nEstado final de los asientos:");
+        auditorio.MostrarAsientos();
+    }
+}
