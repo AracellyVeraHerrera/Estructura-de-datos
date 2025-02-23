@@ -1,0 +1,73 @@
+#include <iostream>
+#include <vector>
+#include <set>
+#include <string>
+#include <algorithm>
+#include <fstream>
+#include <random>
+#include <ctime>
+
+std::vector<std::string> generateCitizens(int count) {
+    std::vector<std::string> citizens;
+    for (int i = 1; i <= count; ++i) {
+        citizens.push_back("Ciudadano " + std::to_string(i));
+    }
+    return citizens;
+}
+
+std::set<std::string> getVaccinatedSet(const std::vector<std::string>& citizens, int vaccinatedCount) {
+    std::set<std::string> vaccinated;
+    std::sample(citizens.begin(), citizens.end(), std::inserter(vaccinated, vaccinated.end()), vaccinatedCount, std::mt19937{std::random_device{}()});
+    return vaccinated;
+}
+
+int main() {
+    std::vector<std::string> citizens = generateCitizens(500);
+    
+    std::set<std::string> pfizerVaccinated = getVaccinatedSet(citizens, 75);
+    std::set<std::string> astrazenecaVaccinated = getVaccinatedSet(citizens, 75);
+    
+    std::set<std::string> bothVaccinated;
+    std::set_intersection(pfizerVaccinated.begin(), pfizerVaccinated.end(),
+                          astrazenecaVaccinated.begin(), astrazenecaVaccinated.end(),
+                          std::inserter(bothVaccinated, bothVaccinated.end()));
+    
+    std::set<std::string> onlyPfizer;
+    std::set_difference(pfizerVaccinated.begin(), pfizerVaccinated.end(),
+                        bothVaccinated.begin(), bothVaccinated.end(),
+                        std::inserter(onlyPfizer, onlyPfizer.end()));
+    
+    std::set<std::string> onlyAstrazeneca;
+    std::set_difference(astrazenecaVaccinated.begin(), astrazenecaVaccinated.end(),
+                        bothVaccinated.begin(), bothVaccinated.end(),
+                        std::inserter(onlyAstrazeneca, onlyAstrazeneca.end()));
+    
+    std::set<std::string> notVaccinated;
+    std::set_difference(citizens.begin(), citizens.end(),
+                        bothVaccinated.begin(), bothVaccinated.end(),
+                        std::inserter(notVaccinated, notVaccinated.end()));
+    
+    std::ofstream report("vacunacion_report.txt");
+    report << "Listado de ciudadanos que no se han vacunado:\n";
+    for (const auto& citizen : notVaccinated) {
+        report << citizen << "\n";
+    }
+    
+    report << "\nListado de ciudadanos que han recibido las dos vacunas:\n";
+    for (const auto& citizen : bothVaccinated) {
+        report << citizen << "\n";
+    }
+    
+    report << "\nListado de ciudadanos que solamente han recibido la vacuna de Pfizer:\n";
+    for (const auto& citizen : onlyPfizer) {
+        report << citizen << "\n";
+    }
+    
+    report << "\nListado de ciudadanos que solamente han recibido la vacuna de Astrazeneca:\n";
+    for (const auto& citizen : onlyAstrazeneca) {
+        report << citizen << "\n";
+    }
+    
+    report.close();
+    return 0;
+}
