@@ -1,0 +1,95 @@
+#include <iostream>
+#include <unordered_map>
+#include <sstream>
+
+class Translator {
+private:
+    std::unordered_map<std::string, std::string> dictionary;
+
+public:
+    Translator() {
+        dictionary = {
+            {"Time", "tiempo"},
+            {"Person", "persona"},
+            {"Year", "año"},
+            {"Way", "camino"},
+            {"Day", "día"},
+            {"Thing", "cosa"},
+            {"Man", "hombre"},
+            {"World", "mundo"},
+            {"Life", "vida"},
+            {"Hand", "mano"},
+            {"Part", "parte"},
+            {"Child", "niño"},
+            {"Eye", "ojo"},
+            {"Woman", "mujer"},
+            {"Place", "lugar"},
+            {"Work", "trabajo"},
+            {"Week", "semana"},
+            {"Case", "caso"},
+            {"Point", "punto"},
+            {"Government", "gobierno"},
+            {"Company", "empresa"}
+        };
+    }
+
+    void translatePhrase(const std::string& phrase) {
+        std::istringstream iss(phrase);
+        std::string word;
+        std::string translatedPhrase;
+
+        while (iss >> word) {
+            auto it = dictionary.find(word);
+            if (it != dictionary.end()) {
+                translatedPhrase += it->second + " ";
+            } else {
+                translatedPhrase += word + " ";
+            }
+        }
+
+        std::cout << "Su frase traducida es: " << translatedPhrase << std::endl;
+    }
+
+    void addWord(const std::string& english, const std::string& spanish) {
+        dictionary[english] = spanish;
+    }
+};
+
+int main() {
+    Translator translator;
+    int option;
+    std::string phrase, englishWord, spanishWord;
+
+    do {
+        std::cout << "MENU\n";
+        std::cout << "=======================================================\n";
+        std::cout << "1. Traducir una frase\n";
+        std::cout << "2. Ingresar más palabras al diccionario\n";
+        std::cout << "0. Salir\n";
+        std::cout << "Seleccione una opción: ";
+        std::cin >> option;
+        std::cin.ignore();
+
+        switch (option) {
+            case 1:
+                std::cout << "Ingrese la frase: ";
+                std::getline(std::cin, phrase);
+                translator.translatePhrase(phrase);
+                break;
+            case 2:
+                std::cout << "Ingrese la palabra en inglés: ";
+                std::getline(std::cin, englishWord);
+                std::cout << "Ingrese la traducción en español: ";
+                std::getline(std::cin, spanishWord);
+                translator.addWord(englishWord, spanishWord);
+                break;
+            case 0:
+                std::cout << "Saliendo...\n";
+                break;
+            default:
+                std::cout << "Opción no válida. Intente de nuevo.\n";
+        }
+    } while (option != 0);
+
+    return 0;
+}
