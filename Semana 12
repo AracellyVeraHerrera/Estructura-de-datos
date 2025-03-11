@@ -1,0 +1,93 @@
+#include <iostream>
+#include <vector>
+#include <map>
+#include <string>
+
+struct Jugador {
+    std::string nombre;
+    int numeroCamiseta;
+    std::string equipo;
+};
+
+struct Equipo {
+    std::string nombre;
+    std::string ciudad;
+};
+
+std::map<std::string, Equipo> equipos;
+std::vector<Jugador> jugadores;
+
+void registrarEquipo() {
+    Equipo equipo;
+    std::cout << "Nombre del equipo: ";
+    std::cin.ignore();
+    std::getline(std::cin, equipo.nombre);
+    std::cout << "Ciudad del equipo: ";
+    std::getline(std::cin, equipo.ciudad);
+    equipos[equipo.nombre] = equipo;
+}
+
+void registrarJugador() {
+    Jugador jugador;
+    std::cout << "Nombre del jugador: ";
+    std::cin.ignore();
+    std::getline(std::cin, jugador.nombre);
+    std::cout << "Número de camiseta: ";
+    std::cin >> jugador.numeroCamiseta;
+    std::cout << "Equipo del jugador: ";
+    std::cin.ignore();
+    std::getline(std::cin, jugador.equipo);
+    jugadores.push_back(jugador);
+}
+
+void visualizarEquipos() {
+    std::cout << "Lista de equipos:\n";
+    for (const auto& par : equipos) {
+        const Equipo& equipo = par.second;
+        std::cout << "- " << equipo.nombre << " (" << equipo.ciudad << ")\n";
+    }
+}
+
+void visualizarJugadores(const std::string& equipoFiltro = "") {
+    std::cout << "Lista de jugadores:\n";
+    for (const Jugador& jugador : jugadores) {
+        if (equipoFiltro.empty() || jugador.equipo == equipoFiltro) {
+            std::cout << "- " << jugador.nombre << " (" << jugador.numeroCamiseta << ") - " << jugador.equipo << "\n";
+        }
+    }
+}
+
+void consultarJugadoresPorEquipo() {
+    std::string equipoConsulta;
+    std::cout << "Nombre del equipo a consultar: ";
+    std::cin.ignore();
+    std::getline(std::cin, equipoConsulta);
+    visualizarJugadores(equipoConsulta);
+}
+
+int main() {
+    int opcion;
+    do {
+        std::cout << "\nMenú:\n";
+        std::cout << "1. Registrar equipo\n";
+        std::cout << "2. Registrar jugador\n";
+        std::cout << "3. Visualizar equipos\n";
+        std::cout << "4. Visualizar jugadores\n";
+        std::cout << "5. Consultar jugadores por equipo\n";
+        std::cout << "0. Salir\n";
+        std::cout << "Opción: ";
+        std::cin >> opcion;
+
+        switch (opcion) {
+            case 1: registrarEquipo(); break;
+            case 2: registrarJugador(); break;
+            case 3: visualizarEquipos(); break;
+            case 4: visualizarJugadores(); break;
+            case 5: consultarJugadoresPorEquipo(); break;
+            case 0: std::cout << "Saliendo...\n"; break;
+            default: std::cout << "Opción inválida.\n";
+        }
+    } while (opcion != 0);
+
+    return 0;
+}
