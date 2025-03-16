@@ -1,38 +1,101 @@
-#include <iostream>
-#include <vector>
-#include <string>
-#include <algorithm>
+using System;
+using System.Collections.Generic;
 
-using namespace std;
+public class Revista
+{
+    public string Titulo { get; set; }
 
-struct Revista { string t; Revista(string t) : t(t) {} };
-struct Catalogo {
-    vector<Revista> r;
-    void add(Revista revista) { r.push_back(revista); } // Corregido aquí
-    bool find(string t) {
-        string lt = t; transform(lt.begin(), lt.end(), lt.begin(), ::tolower);
-        for (auto& rv : r) {
-            string lr = rv.t; transform(lr.begin(), lr.end(), lr.begin(), ::tolower);
-            if (lr == lt) return true;
+    public Revista(string titulo)
+    {
+        Titulo = titulo;
+    }
+}
+
+public class CatalogoRevistas
+{
+    private List<Revista> revistas;
+
+    public CatalogoRevistas()
+    {
+        revistas = new List<Revista>();
+    }
+
+    public void AgregarRevista(Revista revista)
+    {
+        revistas.Add(revista);
+    }
+
+    public bool BuscarRevista(string titulo)
+    {
+        foreach (var revista in revistas)
+        {
+            if (revista.Titulo.Equals(titulo, StringComparison.OrdinalIgnoreCase))
+            {
+                return true;
+            }
         }
         return false;
     }
-};
 
-int main() {
-    Catalogo c;
-    for (string s : {"NatGeo", "Time", "Science", "Forbes", "Vogue", "Eco", "Wired", "Sports", "Stone", "HBR"})
-        c.add(Revista(s));
-
-    int op;
-    while (cout << "1.Buscar 2.Salir: ", cin >> op) {
-        if (op == 1) {
-            string t;
-            cin.ignore();
-            getline(cin, t);
-            cout << (c.find(t) ? "Encontrado" : "No encontrado") << endl;
-        } else if (op == 2) break;
-        else cout << "Invalido\n";
+    public void MostrarMenu()
+    {
+        Console.WriteLine("--- Catálogo de Revistas ---");
+        Console.WriteLine("1. Buscar revista");
+        Console.WriteLine("2. Salir");
+        Console.Write("Seleccione una opción: ");
     }
-    return 0;
+}
+
+public class Program
+{
+    public static void Main(string[] args)
+    {
+        CatalogoRevistas catalogo = new CatalogoRevistas();
+
+        // Agregar 10 títulos de revistas
+        catalogo.AgregarRevista(new Revista("National Geographic"));
+        catalogo.AgregarRevista(new Revista("Time"));
+        catalogo.AgregarRevista(new Revista("Science"));
+        catalogo.AgregarRevista(new Revista("Forbes"));
+        catalogo.AgregarRevista(new Revista("Vogue"));
+        catalogo.AgregarRevista(new Revista("The Economist"));
+        catalogo.AgregarRevista(new Revista("Wired"));
+        catalogo.AgregarRevista(new Revista("Sports Illustrated"));
+        catalogo.AgregarRevista(new Revista("Rolling Stone"));
+        catalogo.AgregarRevista(new Revista("Harvard Business Review"));
+
+        int opcion;
+        do
+        {
+            catalogo.MostrarMenu();
+            if (int.TryParse(Console.ReadLine(), out opcion))
+            {
+                switch (opcion)
+                {
+                    case 1:
+                        Console.Write("Ingrese el título de la revista a buscar: ");
+                        string tituloBuscar = Console.ReadLine();
+                        if (catalogo.BuscarRevista(tituloBuscar))
+                        {
+                            Console.WriteLine("Revista encontrada.");
+                        }
+                        else
+                        {
+                            Console.WriteLine("Revista no encontrada.");
+                        }
+                        break;
+                    case 2:
+                        Console.WriteLine("Saliendo...");
+                        break;
+                    default:
+                        Console.WriteLine("Opción inválida.");
+                        break;
+                }
+            }
+            else
+            {
+                Console.WriteLine("Opción inválida.");
+            }
+        } while (opcion != 2);
+    }
 }
