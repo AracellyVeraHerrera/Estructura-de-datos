@@ -1,0 +1,38 @@
+#include <iostream>
+#include <vector>
+#include <string>
+#include <algorithm>
+
+using namespace std;
+
+struct Revista { string t; Revista(string t) : t(t) {} };
+struct Catalogo {
+    vector<Revista> r;
+    void add(Revista revista) { r.push_back(revista); } // Corregido aquí
+    bool find(string t) {
+        string lt = t; transform(lt.begin(), lt.end(), lt.begin(), ::tolower);
+        for (auto& rv : r) {
+            string lr = rv.t; transform(lr.begin(), lr.end(), lr.begin(), ::tolower);
+            if (lr == lt) return true;
+        }
+        return false;
+    }
+};
+
+int main() {
+    Catalogo c;
+    for (string s : {"NatGeo", "Time", "Science", "Forbes", "Vogue", "Eco", "Wired", "Sports", "Stone", "HBR"})
+        c.add(Revista(s));
+
+    int op;
+    while (cout << "1.Buscar 2.Salir: ", cin >> op) {
+        if (op == 1) {
+            string t;
+            cin.ignore();
+            getline(cin, t);
+            cout << (c.find(t) ? "Encontrado" : "No encontrado") << endl;
+        } else if (op == 2) break;
+        else cout << "Invalido\n";
+    }
+    return 0;
+}
