@@ -1,0 +1,137 @@
+using System;
+using System.Collections.Generic;
+
+class Nodo
+{
+    public int Dato;
+    public Nodo Izquierdo;
+    public Nodo Derecho;
+
+    public Nodo(int dato)
+    {
+        Dato = dato;
+        Izquierdo = null;
+        Derecho = null;
+    }
+}
+
+class ArbolBinario
+{
+    public Nodo Raiz;
+
+    public ArbolBinario()
+    {
+        Raiz = null;
+    }
+
+    public void Insertar(int dato)
+    {
+        Raiz = InsertarRecursivo(Raiz, dato);
+    }
+
+    private Nodo InsertarRecursivo(Nodo nodo, int dato)
+    {
+        if (nodo == null)
+        {
+            return new Nodo(dato);
+        }
+
+        if (dato < nodo.Dato)
+        {
+            nodo.Izquierdo = InsertarRecursivo(nodo.Izquierdo, dato);
+        }
+        else if (dato > nodo.Dato)
+        {
+            nodo.Derecho = InsertarRecursivo(nodo.Derecho, dato);
+        }
+
+        return nodo;
+    }
+
+    public void Inorden(Nodo nodo)
+    {
+        if (nodo != null)
+        {
+            Inorden(nodo.Izquierdo);
+            Console.Write(nodo.Dato + " ");
+            Inorden(nodo.Derecho);
+        }
+    }
+
+    public void Preorden(Nodo nodo)
+    {
+        if (nodo != null)
+        {
+            Console.Write(nodo.Dato + " ");
+            Preorden(nodo.Izquierdo);
+            Preorden(nodo.Derecho);
+        }
+    }
+
+    public void Postorden(Nodo nodo)
+    {
+        if (nodo != null)
+        {
+            Postorden(nodo.Izquierdo);
+            Postorden(nodo.Derecho);
+            Console.Write(nodo.Dato + " ");
+        }
+    }
+
+    public void VisualizarArbol()
+    {
+        VisualizarArbolRecursivo(Raiz, 0);
+    }
+
+    private void VisualizarArbolRecursivo(Nodo nodo, int espacio)
+    {
+        if (nodo == null)
+        {
+            return;
+        }
+
+        espacio += 10;
+
+        VisualizarArbolRecursivo(nodo.Derecho, espacio);
+
+        Console.WriteLine();
+        for (int i = 10; i < espacio; i++)
+        {
+            Console.Write(" ");
+        }
+        Console.Write(nodo.Dato);
+
+        VisualizarArbolRecursivo(nodo.Izquierdo, espacio);
+    }
+}
+
+class Program
+{
+    static void Main(string[] args)
+    {
+        Console.WriteLine("UNIVERSIDAD ESTATAL AMAZÓNICA\n");
+
+        ArbolBinario arbol = new ArbolBinario(); // Corrected line
+
+        // Insertar los datos
+        int[] datos = { 100, 50, 40, 60, 150, 111, 165 };
+        foreach (int dato in datos)
+        {
+            arbol.Insertar(dato);
+        }
+
+        // Visualizar el árbol
+        Console.WriteLine("Árbol Binario:");
+        arbol.VisualizarArbol();
+
+        // Realizar los recorridos
+        Console.WriteLine("\n\nRecorrido Inorden:");
+        arbol.Inorden(arbol.Raiz);
+
+        Console.WriteLine("\n\nRecorrido Preorden:");
+        arbol.Preorden(arbol.Raiz);
+
+        Console.WriteLine("\n\nRecorrido Postorden:");
+        arbol.Postorden(arbol.Raiz);
+    }
+}
