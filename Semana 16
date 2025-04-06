@@ -1,0 +1,130 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace BuscadorDeVuelos
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            // Datos de vuelos (origen, destino, precio)
+            var vuelos = new List<Vuelo>
+            {
+                new Vuelo("Ciudad A", "Ciudad B", 200),
+                new Vuelo("Ciudad A", "Ciudad C", 300),
+                new Vuelo("Ciudad B", "Ciudad C", 150),
+                new Vuelo("Ciudad C", "Ciudad A", 250)
+            };
+
+            // Crear un grafo de vuelos
+            var grafo = CrearGrafo(vuelos);
+
+            // Solicitar las ciudades de origen y destino
+            Console.Write("Ingrese la ciudad de origen: ");
+            string origen = Console.ReadLine();
+
+            Console.Write("Ingrese la ciudad de destino: ");
+            string destino = Console.ReadLine();
+
+            // Encontrar el vuelo más barato usando Dijkstra
+            var vueloBarato = EncontrarVueloMasBarato(grafo, origen, destino);
+
+            if (vueloBarato != null)
+            {
+                Console.WriteLine($"El vuelo más barato de {origen} a {destino} cuesta {vueloBarato.Precio} USD.");
+            }
+            else
+            {
+                Console.WriteLine("No se encontró un vuelo entre esas ciudades.");
+            }
+        }
+
+        // Método para crear el grafo
+        static Dictionary<string, List<Vuelo>> CrearGrafo(List<Vuelo> vuelos)
+        {
+            var grafo = new Dictionary<string, List<Vuelo>>();
+
+            foreach (var vuelo in vuelos)
+            {
+                if (!grafo.ContainsKey(vuelo.Origen))
+                {
+                    grafo[vuelo.Origen] = new List<Vuelo>();
+                }
+                grafo[vuelo.Origen].Add(vuelo);
+            }
+
+            return grafo;
+        }
+
+        // Algoritmo de Dijkstra para encontrar el vuelo más barato
+        static Vuelo EncontrarVueloMasBarato(Dictionary<string, List<Vuelo>> grafo, string origen, string destino)
+        {
+            var precios = new Dictionary<string, int>();
+            var anteriores = new Dictionary<string, string>();
+            var visitados = new HashSet<string>();
+            var ciudades = new List<string>(grafo.Keys);
+
+            // Inicializar precios
+            foreach (var ciudad in ciudades)
+            {
+                precios[ciudad] = int.MaxValue;
+                anteriores[ciudad] = null;
+            }
+            precios[origen] = 0;
+
+            while (visitados.Count < ciudades.Count)
+            {
+                // Seleccionar el nodo con el precio más bajo
+                string ciudadActual = null;
+                foreach (var ciudad in ciudades)
+                {
+                    if (!visitados.Contains(ciudad) &&
+                        (ciudadActual == null || precios[ciudad] < precios[ciudadActual]))
+                    {
+                        ciudadActual = ciudad;
+                    }
+                }
+
+                if (precios[ciudadActual] == int.MaxValue)
+                    break;
+
+                visitados.Add(ciudadActual);
+
+                // Relajación de los bordes
+                if (grafo.ContainsKey(ciudadActual))
+                {
+                    foreach (var vuelo in grafo[ciudadActual])
+                    {
+                        if (precios[ciudadActual] + vuelo.Precio < precios[vuelo.Destino])
+                        {
+                            precios[vuelo.Destino] = precios[ciudadActual] + vuelo.Precio;
+                            anteriores[vuelo.Destino] = ciudadActual;
+                        }
+                    }
+                }
+            }
+
+            // Recuperar el vuelo más barato
+            if (precios[destino] == int.MaxValue)
+                return null;
+
+            // Crear el vuelo más barato
+            return grafo[origen].FirstOrDefault(v => v.Destino == destino);
+        }
+    }
+
+    public class Vuelo
+    {
+        public string Origen { get; set; }
+        public string Destino { get; set; }
+        public int Precio { get; set; }
+
+        public Vuelo(string origen, string destino, int precio)
+        {
+            Origen = origen;
+            Destino = destino;
+            Precio = precio;
+        }
+    }
+}
